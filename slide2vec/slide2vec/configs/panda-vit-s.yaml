@@ -1,0 +1,31 @@
+csv: ""
+
+visualize: true
+
+fold:
+output_dir: "output/fold-${fold}" # output directory
+
+tiling:
+  backend: "openslide" # slide reader (biopsy slides need openslide, not the default asap)
+  params:
+    spacing: 0.5 # spacing at which to tile the slide, in microns per pixel
+    tolerance: 0.05 # tolerance for matching the spacing (float between 0 and 1, deciding how much the spacing can deviate from the one specified in the slide metadata)
+    tile_size: 2048 # size of the tiles to extract, in pixels
+    min_tissue_percentage: 0.01 # threshold used to filter out tiles that have less tissue than this value (percentage)
+  seg_params:
+    tissue_pixel_value: 2 # value of tissue pixel in pre-computed segmentation masks
+  filter_params:
+    ref_tile_size: 224
+
+model:
+  level: "region"
+  name: "panda-vit-s"
+  pretrained_weights: "/opt/app/hvit/checkpoints/pretrained/vit_256_small_dino_fold_${fold}.pt"
+  patch_size: 256 # if level is "region", size used to unroll the region into patches
+  batch_size: 1
+
+speed:
+  fp16: false
+
+wandb:
+  enable: false

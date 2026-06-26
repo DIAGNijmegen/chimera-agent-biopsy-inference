@@ -216,3 +216,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---- chimera-agent-biopsy-inference ----
+# Model weights are fetched from the GitHub weights release at build time
+# (see scripts/publish_weights.sh); never commit them (no Git LFS).
+hvit/checkpoints/
+
+# Local run artifacts
+slide2vec/output/
+hvit/output/
+output/
