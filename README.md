@@ -46,8 +46,8 @@ Three stages, all run inside the container by `run.sh`:
   Each fold predicts a grade; the per-case grade is a custom-distance majority
   vote across folds.
 
-The HViT model family is described in our preprint,
-[arXiv:2603.14187](https://arxiv.org/abs/2603.14187) (under review).
+The HViT model family is described in our paper, published in
+[*Medical Image Analysis*](https://www.sciencedirect.com/science/article/pii/S1361841525002105).
 
 ## Prerequisites
 
