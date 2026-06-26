@@ -6,7 +6,7 @@ images, for the
 (**Task 2**).
 
 For each case it tiles the WSI(s), extracts HViT region features with
-[slide2vec](https://github.com/clemsgrs/slide2vec), runs a 5-fold MIL ensemble to
+[slide2vec](https://github.com/clemsgrs/slide2vec) (v1.3.0), runs a 5-fold MIL ensemble to
 produce a per-slide ISUP grade plus the per-fold slide-level latents, and
 post-processes those into a single per-case WSI latent. A whole folder / manifest
 of cases is processed in one invocation.
@@ -54,11 +54,8 @@ The HViT model family is described in our preprint,
 - NVIDIA GPU + driver, Docker, and the
   [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
   (`--gpus all`).
-- **Network access at build time only** — the feature-extractor / ensemble
-  weights (from a GitHub release) and the feature-extractor's slide-reader
-  dependency (`openslide-bin`) are fetched during the build and baked in; the
-  resulting image runs fully offline. The `panda-vit-s` path needs no foundation-
-  model installs (no CONCH, no MUSK).
+- **Network access at build time only** — the weights are fetched during the
+  build and baked in; the image then runs fully offline.
 - Slide formats are whatever the base image's ASAP/OpenSlide stack supports
   (`.mrxs`, `.tif`, `.svs`, …).
 
@@ -129,17 +126,14 @@ case_001,/slides/case_001.tif,/masks/case_001.tif
     └── folds/fold-{0..4}/<slide_id>.pt   # per-fold [192] latents (provenance)
 ```
 
-`inference.csv` carries one row per `slide_id` with the per-fold predictions
-(`pred_fold-0` … `pred_fold-4`) and the ensemble `pred` (the majority-vote ISUP
-grade, an integer in `0..5`).
+`inference.csv` — one row per `slide_id`: the per-fold predictions
+(`pred_fold-0` … `pred_fold-4`) and the ensemble `pred` (majority-vote ISUP grade,
+integer `0..5`).
 
-The deliverable `latents/<slide_id>.pt` is the five per-fold `[192]` latents each
-flattened and concatenated in fold order **0,1,2,3,4** into one 1-D `float32`
-tensor of length **960** (5 × 192). `latents/<slide_id>.json` carries the same
-values in the grand-challenge feature-vector format
-`[{"title": "", "features": [<960 floats>]}]`, for consumers that read JSON rather
-than torch tensors. The per-fold `[192]` latents are retained under
-`latents/folds/fold-{0..4}/<slide_id>.pt` for provenance / debugging.
+`latents/<slide_id>.pt` — the five per-fold `[192]` latents flattened and
+concatenated in fold order **0,1,2,3,4** into one 1-D `float32` tensor of length
+**960**. `latents/<slide_id>.json` carries the same values in the grand-challenge
+feature-vector format `[{"title": "", "features": [<960 floats>]}]`.
 
 ## Layout
 
@@ -167,9 +161,8 @@ heads) — are gitignored and fetched from the weights release at build time.
 
 ## Provenance
 
-Standalone, offline repackaging of an internal training-pipeline image. The
-feature extraction is handled by [slide2vec](https://github.com/clemsgrs/slide2vec)
-and the aggregator by the HViT pipeline; both are vendored here trimmed to the
-inference path.
+Standalone, offline repackaging of an internal training-pipeline image.
+[slide2vec](https://github.com/clemsgrs/slide2vec) (feature extraction) and the
+HViT aggregator are vendored here, each trimmed to the inference path.
 </content>
 </invoke>
