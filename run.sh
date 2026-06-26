@@ -4,7 +4,7 @@
 #
 # Offline pipeline (all weights baked into the image at build time):
 #   1. slide2vec — tile each WSI @ 0.5 mpp and extract per-fold panda-vit-s region features
-#   2. hvit      — 5-fold MIL ensemble -> per-slide ISUP grade + latents
+#   2. aggregator — 5-fold MIL ensemble -> per-slide ISUP grade + latents
 #
 # by @clementgrisi
 set -euo pipefail
@@ -80,14 +80,14 @@ cp -r output/fold-0/coordinates "${output_folder}/."
 cp -r output/fold-0/visualization "${output_folder}/."
 
 # ---------------------------------------------------------------------------
-# Stage 2 — hvit: 5-fold MIL ensemble -> ISUP grade + per-slide latents
+# Stage 2 — aggregator: 5-fold MIL ensemble -> ISUP grade + per-slide latents
 # ---------------------------------------------------------------------------
 cd "${APP_DIR}"
-python3 hvit/inference/ensemble.py --config-name "panda-inference" test_csv="${csv}"
+python3 aggregator/inference.py --config-name "panda-inference" test_csv="${csv}"
 
 # collect outputs
-cp hvit/output/inference/results/submission.csv "${output_folder}/inference.csv"
+cp aggregator/output/inference/results/submission.csv "${output_folder}/inference.csv"
 mkdir -p "${output_folder}/latents"
-cp -r hvit/output/inference/results/latents/* "${output_folder}/latents/."
+cp -r aggregator/output/inference/results/latents/* "${output_folder}/latents/."
 
 echo "Done. Outputs written to ${output_folder}"
