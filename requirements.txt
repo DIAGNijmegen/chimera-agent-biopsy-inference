@@ -12,3 +12,7 @@ tqdm
 seaborn==0.12.0
 hydra-core==1.2.0
 opencv-python
+# orjson serializes the JSON companion next to each [960] latent .pt. Pinned to
+# the current stable wheel so the serialization path matches the maintainer's
+# notebook (and the already-submitted artifacts) byte-for-byte.
+orjson==3.11.9
