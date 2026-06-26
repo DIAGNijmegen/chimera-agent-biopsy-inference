@@ -18,7 +18,7 @@ display_help() {
    echo "options:"
    echo "  -f   CSV manifest listing the slides to process (required)"
    echo "  -o   output folder (required)"
-   echo "  -c   slide2vec configuration file (optional; defaults to the baked-in panda-vit-s.yaml)"
+   echo "  -c   slide2vec configuration file (optional; defaults to the baked-in slide2vec-config.yaml)"
    echo "  -h   show this help and exit"
    echo
 }
@@ -40,7 +40,7 @@ if [[ -z "${csv:-}" || -z "${output_folder:-}" ]]; then
     exit 1
 fi
 
-config="${APP_DIR}/slide2vec/slide2vec/configs/panda-vit-s.yaml"
+config="${APP_DIR}/slide2vec-config.yaml"
 if [[ -n "${config_file:-}" ]]; then
   config="$config_file"
 fi
