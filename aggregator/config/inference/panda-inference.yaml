@@ -1,7 +1,7 @@
 test_csv: ''
 
 features_root_dir: 'slide2vec/output'
-output_dir: 'hvit/output'
+output_dir: 'aggregator/output'
 experiment_name: 'inference'
 level: 'local'
 
@@ -16,7 +16,7 @@ label_encoding:
 distance_func: 'custom'
 
 model:
-  checkpoints: 'hvit/checkpoints/trained'
+  checkpoints: 'aggregator/checkpoints/trained'
   dropout: 0.25
   pretrain_vit_patch:
   freeze_vit_patch: True

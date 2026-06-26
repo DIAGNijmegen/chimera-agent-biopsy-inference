@@ -20,7 +20,7 @@ tiling:
 model:
   level: "region"
   name: "panda-vit-s"
-  pretrained_weights: "/opt/app/hvit/checkpoints/pretrained/vit_256_small_dino_fold_${fold}.pt"
+  pretrained_weights: "/opt/app/aggregator/checkpoints/pretrained/vit_256_small_dino_fold_${fold}.pt"
   patch_size: 256 # if level is "region", size used to unroll the region into patches
   batch_size: 1
 

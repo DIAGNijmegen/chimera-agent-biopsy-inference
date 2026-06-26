@@ -2,14 +2,10 @@ h5py
 numpy<2
 pandas
 pillow
-gdown
-plotly
 einops
-webdataset
 matplotlib
 torch
 torchvision
-lifelines
 scikit-learn
 scikit-survival
 tqdm

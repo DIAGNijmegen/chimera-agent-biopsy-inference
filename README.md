@@ -56,8 +56,8 @@ docker build -t chimera-biopsy-inference .
 ```
 
 > **Maintainers:** to (re)publish the weights release from a checkout that has
-> the `.pt` files staged under `hvit/checkpoints/pretrained/` and
-> `hvit/checkpoints/trained/`, run `bash scripts/publish_weights.sh` (needs repo
+> the `.pt` files staged under `aggregator/checkpoints/pretrained/` and
+> `aggregator/checkpoints/trained/`, run `bash scripts/publish_weights.sh` (needs repo
 > write access).
 
 ## Run
@@ -131,14 +131,14 @@ slide-level `[192]` embeddings from each fold, kept for downstream use.
 │   └── SHA256SUMS               # checksums the build verifies the weights against
 ├── slide2vec/                   # vendored tiling + panda-vit-s feature extraction
 │   └── slide2vec/configs/panda-vit-s.yaml   # extractor config (0.5 mpp, region level)
-└── hvit/                        # vendored MIL ensemble, trimmed to the inference path
-    ├── inference/ensemble.py
+└── aggregator/                  # vendored MIL ensemble, trimmed to the inference path
+    ├── inference.py
     ├── config/inference/panda-inference.yaml
     └── source/
 ```
 
-The per-fold weights — `hvit/checkpoints/pretrained/vit_256_small_dino_fold_{0..4}.pt`
-(feature extractors) and `hvit/checkpoints/trained/fold-{0..4}.pt` (ensemble
+The per-fold weights — `aggregator/checkpoints/pretrained/vit_256_small_dino_fold_{0..4}.pt`
+(feature extractors) and `aggregator/checkpoints/trained/fold-{0..4}.pt` (ensemble
 heads) — are gitignored and fetched from the weights release at build time.
 
 ## Provenance

@@ -220,9 +220,9 @@ __marimo__/
 # ---- chimera-agent-biopsy-inference ----
 # Model weights are fetched from the GitHub weights release at build time
 # (see scripts/publish_weights.sh); never commit them (no Git LFS).
-hvit/checkpoints/
+aggregator/checkpoints/
 
 # Local run artifacts
 slide2vec/output/
-hvit/output/
+aggregator/output/
 output/
