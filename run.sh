@@ -3,8 +3,9 @@
 # CHIMERA Agent — Task 2: ISUP grade from H&E biopsy WSIs.
 #
 # Offline pipeline (all weights baked into the image at build time):
-#   1. slide2vec — tile each WSI @ 0.5 mpp and extract per-fold panda-vit-s region features
-#   2. aggregator — 5-fold MIL ensemble -> per-slide ISUP grade + latents
+#   1. slide2vec    — tile each WSI @ 0.5 mpp and extract per-fold panda-vit-s region features
+#   2. aggregator   — 5-fold MIL ensemble -> per-slide ISUP grade + per-fold latents
+#   3. post-process — concatenate the per-fold latents into the single deliverable latent
 #
 # by @clementgrisi
 set -euo pipefail
@@ -85,9 +86,16 @@ cp -r output/fold-0/visualization "${output_folder}/."
 cd "${APP_DIR}"
 python3 aggregator/inference.py --config-name "panda-inference" test_csv="${csv}"
 
-# collect outputs
+# collect outputs (per-fold latents kept for provenance, under folds/)
 cp aggregator/output/inference/results/submission.csv "${output_folder}/inference.csv"
-mkdir -p "${output_folder}/latents"
-cp -r aggregator/output/inference/results/latents/* "${output_folder}/latents/."
+mkdir -p "${output_folder}/latents/folds"
+cp -r aggregator/output/inference/results/latents/* "${output_folder}/latents/folds/."
+
+# ---------------------------------------------------------------------------
+# Stage 3 — post-process: concatenate the five per-fold WSI latents into the
+#   single deliverable latent per case (fold 0->4, flattened, float32, [960]).
+#   Per-fold latents stay under latents/folds/ for provenance.
+# ---------------------------------------------------------------------------
+python aggregator/postprocess.py --latents-dir "${output_folder}/latents"
 
 echo "Done. Outputs written to ${output_folder}"
