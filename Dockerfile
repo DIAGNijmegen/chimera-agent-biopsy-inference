@@ -16,9 +16,10 @@ RUN mkdir -p /opt/app && chown user:user /opt/app
 USER user
 WORKDIR /opt/app
 
-# vendored slide2vec (tiling + panda-vit-s region feature extraction); the
-# panda-vit-s extractor config lives at slide2vec/slide2vec/configs/panda-vit-s.yaml
+# vendored slide2vec (tiling + panda-vit-s region feature extraction)
 COPY --chown=user:user slide2vec ./slide2vec
+# top-level slide2vec feature-extraction config (the default run.sh passes to slide2vec)
+COPY --chown=user:user slide2vec-config.yaml ./slide2vec-config.yaml
 # vendored aggregator pipeline (5-fold MIL ensemble), trimmed to the inference path;
 # the inference config lives at aggregator/config/inference/panda-inference.yaml
 COPY --chown=user:user aggregator ./aggregator
@@ -28,15 +29,10 @@ COPY --chown=user:user aggregator ./aggregator
 # runtime overmount discards. Build-time network only; baked for offline run.
 #   - aggregator requirements (the base image already provides torch/torchvision/numpy)
 #   - openslide-bin: the slide reader the biopsy slides need (config backend)
-#   - CONCH + MUSK: foundation-model code slide2vec imports at module load
-#     (prov-gigapath and the other encoders are imported lazily and unused here)
 COPY --chown=user:user requirements.txt ./requirements.txt
 USER root
 RUN python3 -m pip install --no-cache-dir -r requirements.txt && \
-    python3 -m pip install --no-cache-dir openslide-bin && \
-    python3 -m pip install --no-cache-dir \
-      git+https://github.com/Mahmoodlab/CONCH.git \
-      git+https://github.com/lilab-stanford/MUSK.git
+    python3 -m pip install --no-cache-dir openslide-bin
 USER user
 
 # Aggregator model weights — per-fold DINO ViT feature extractors (pretrained/) and
@@ -59,7 +55,7 @@ RUN mkdir -p aggregator/checkpoints/pretrained aggregator/checkpoints/trained &&
     sha256sum -c resources/SHA256SUMS && \
     echo "all weights verified"
 
-# vendored slide2vec/aggregator on the import path (CONCH/MUSK resolve from site-packages)
+# vendored slide2vec/aggregator on the import path
 ENV PYTHONPATH="/opt/app/slide2vec:/opt/app/aggregator:${PYTHONPATH}"
 
 # entrypoint orchestrates the two stages; see run.sh -h for usage
