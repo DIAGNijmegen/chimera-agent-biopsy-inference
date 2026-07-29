@@ -97,6 +97,28 @@ directory and write the manifest paths accordingly.
 > otherwise check the saved `‹output_folder›/visualization/` overlays before
 > trusting the output.
 
+### Config knobs you may need to change
+
+The baked-in `slide2vec-config.yaml` is tuned for this model — the tiling
+geometry (`spacing`, `tile_size`, `patch_size`) and the model block must be left
+alone, since they define what the feature extractor was trained on. Two settings
+are data-dependent and are the ones worth overriding via `-c`:
+
+| key | default | when to change it |
+|-----|---------|-------------------|
+| `tiling.backend` | `openslide` | slide reader used to open **both** the WSI and the mask. `openslide` handles the usual biopsy formats (`.tif`, `.svs`, `.mrxs`); switch to `asap` if your slides or masks are in a format OpenSlide cannot read. |
+| `tiling.seg_params.tissue_pixel_value` | `2` | **almost certainly, if you supply your own `mask_path`.** This is the pixel value that counts as tissue in a pre-computed mask; slide2vec keeps exactly `mask == tissue_pixel_value`. Set it to `1` for a typical binary 0/1 mask, `255` for a 0/255 mask, or to whichever label id is tissue in a multi-class mask. Only used when `mask_path` is given. |
+
+A wrong `tissue_pixel_value` is silent: the mask comes out empty, every tile is
+filtered by `min_tissue_percentage`, and the case yields no features. If a case
+produces no tiles, check this value first, and confirm against the
+`‹output_folder›/visualization/` overlays.
+
+To override, copy the baked-in `slide2vec-config.yaml`, edit those keys, mount it,
+and pass it with `-c`. Keep the rest as-is — in particular the `${fold}`
+placeholders in `output_dir` and `model.pretrained_weights`, which `run.sh` fills
+in per fold.
+
 ## I/O contract
 
 **Input** — a CSV manifest in slide2vec format:
